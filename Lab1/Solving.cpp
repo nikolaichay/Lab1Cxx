@@ -1,52 +1,47 @@
-#include <cmath>
-#include <iostream>
-const double eps = 1e-8;
-int Solving_Quadratic_Equation(const double a, const double b, const double c, double& x1, double& x2);
-void ReadingCoef(double& a, double& b, double& c);
-void PrintResult(const int count, const double x1, const double x2);
-int main(int argc, char* argv[]) {
-	double a, b, c;
-	ReadingCoef(a, b, c);
-	double x1, x2;
-	int count = Solving_Quadratic_Equation(a, b, c, x1, x2);
-	PrintResult(count, x1, x2);
-	return 0;
-}
-int Solving_Quadratic_Equation(const double a, const double b, const double c, double& x1, double& x2) {
-	if (fabs(a) < eps) {
-		if (fabs(b) < eps) {
-			return 0;
-		}
-		x1 = x2 = -c / b;
-		return 1;
-	}
-	double d = b * b - 4 * a * c;
-	if (d < 0) {
-		return 0;
-	}
-	x1 = (-b + sqrt(d)) / (2 * a);
-	x2 = (-b - sqrt(d)) / (2 * a);
-	if (fabs(d) < eps) {
-		return 1;
-	}
-	return 2;
-}
-void ReadingCoef(double& a, double& b, double& c) {
-	std::cout << "Enter equation (ax^2 + bx + c) coefficients" << std::endl;
-	std::cin >> a >> b >> c;
-	return;
-}
-void PrintResult(const int count, const double x1, const double x2) {
-	switch (count) {
+#include "Solving.hpp"
+const double eps = 1e-10;
+
+void solution::print() const {
+	switch (_root_count) {
 	case 0:
-		std::cout << "Equation has no roots" << std::endl;
+		cout << "No roots or incorrect input";
 		break;
 	case 1:
-		std::cout << "Equation root: " << x1 << std::endl;
+		cout << "Root is: " << _x1;
 		break;
 	case 2:
-		std::cout << "Equation roots: " << x1 << ", " << x2 << std::endl;
+		cout << "Roots are: " << _x1 << "," << _x2;
 		break;
 	}
-	return;
+}
+
+solution equation::Solve() const {
+	double x_1 = 0;
+	double x_2 = 0;
+	if (abs(_a) < eps) {
+		if (abs(_b) < eps) {
+			return { 0,0,0 };
+		}
+		x_1 = -_c / _b;
+		x_2 = -_c / _b;
+		return { 1,x_1,x_2 };
+	}
+	double d = _b * _b - 4 * _a * _c;
+	if (d < 0) {
+		return { 0,0,0 };
+	}
+	x_1 = (-_b + sqrt(d)) / (2 * _a);
+	x_2 = (-_b - sqrt(d)) / (2 * _a);
+	if (fabs(d) < eps) {
+		return { 1,x_1,x_2 };
+	}
+	return { 2, x_1,x_2 };
+}
+
+int main() {
+	equation eq(cin);
+	eq.Solve();
+	const solution sol = eq.Solve();
+	sol.print();
+	return 0;
 }
